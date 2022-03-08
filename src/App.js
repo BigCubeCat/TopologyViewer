@@ -97,7 +97,22 @@ export default class App extends React.Component {
     }
     for (var tr in trips_counts) {
       if (trips_counts[tr] === 1) {
-
+        let new_target;
+        let new_source;
+        let new_links = [];
+        for (var e in topology.links) {
+          let el = topology.links[e];
+          if (el.source === trips[tr]) {
+            new_target = el.target;
+          } else if (el.target === trips[tr]) {
+            new_source = el.source;
+          } else {
+            new_links.push(el);
+          }
+        }
+        topology.links = new_links;
+        topology.links.push({source: new_source, target: new_target})
+        topology.nodes = topology.nodes.filter(function(v) { return v.id !== trips[tr]; })
       }
     }
     this.setState({data: topology, fileIsOpen: true, keys: keys, values: values})
