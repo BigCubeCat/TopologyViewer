@@ -1,8 +1,8 @@
-import React, {useState} from 'react'
+import React from 'react'
 import './App.css';
 import 'react-force-graph-2d'
 import ForceGraph from "react-force-graph-2d";
-import FileInput from "./FileInput";
+import FileInput from "./components/FileInput";
 
 export default class App extends React.Component {
   constructor(props) {
@@ -16,7 +16,39 @@ export default class App extends React.Component {
   }
 
   getColor(n) {
-    return '#' + ((n * 1234567) % Math.pow(2, 24)).toString(16).padStart(6, '0');
+    switch (("" + this.state.values[n.id])[0]) { // "" + for catch undefined
+      case "f":
+        return "#3931ee";
+        break
+      case "m":
+        return "#0ad264";
+        break
+      case "M":
+        return "#000000";
+        break
+      case "h":
+        return "#9016f3";
+        break
+      case "d":
+        return "#ec2c2c";
+        break
+      case "b":
+        return "#e113d7";
+        break
+      case "e":
+        return "#97f30c";
+        break
+      case "t":
+        return "#666666";
+        break
+      case "s":
+        return "#a1a100";
+        break
+      case "w":
+        return "#00fff8";
+        break
+    }
+    return '#' + ((n.id * 1234567) % Math.pow(2, 24)).toString(16).padStart(6, '0');
   }
 
   nodePaint({id, x, y}, color, ctx, values) {
@@ -95,12 +127,12 @@ export default class App extends React.Component {
       }
       current_index++;
     }
-    for (var tr in trips_counts) {
+    for (const tr in trips_counts) {
       if (trips_counts[tr] === 1) {
         let new_target;
         let new_source;
         let new_links = [];
-        for (var e in topology.links) {
+        for (const e in topology.links) {
           let el = topology.links[e];
           if (el.source === trips[tr]) {
             new_target = el.target;
@@ -112,7 +144,9 @@ export default class App extends React.Component {
         }
         topology.links = new_links;
         topology.links.push({source: new_source, target: new_target})
-        topology.nodes = topology.nodes.filter(function(v) { return v.id !== trips[tr]; })
+        topology.nodes = topology.nodes.filter(function (v) {
+          return v.id !== trips[tr];
+        })
       }
     }
     this.setState({data: topology, fileIsOpen: true, keys: keys, values: values})
@@ -129,7 +163,7 @@ export default class App extends React.Component {
               nodeLabel="id"
               nodeCanvasObject={
                 (node, ctx) => this.nodePaint(
-                  node, this.getColor(node.id), ctx, this.state.values
+                  node, this.getColor(node), ctx, this.state.values
                 )
               }
               nodePointerAreaPaint={this.nodePaint}
